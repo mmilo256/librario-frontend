@@ -1,35 +1,55 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { Route, Routes } from "react-router-dom";
+import Header from "./components/Header";
+import Tabs from "./components/Tabs";
+import Books from "./pages/Books";
+import Authors from "./pages/Authors";
+import Genres from "./pages/Genres";
+import { useEffect, useState } from "react";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [authors, setAuthors] = useState([]);
+  const [genres, setGenres] = useState([]);
+  const [books, setBooks] = useState([]);
+
+  useEffect(() => {
+    (async () => {
+      const response = await fetch("http://localhost:3000/authors");
+      const authors = await response.json();
+      setAuthors(authors);
+    })();
+  }, [setAuthors]);
+
+  useEffect(() => {
+    (async () => {
+      const response = await fetch("http://localhost:3000/genres");
+      const genres = await response.json();
+      setGenres(genres);
+    })();
+  }, [setGenres]);
+
+  useEffect(() => {
+    (async () => {
+      const response = await fetch("http://localhost:3000/books");
+      const books = await response.json();
+      setBooks(books);
+    })();
+  }, [setBooks]);
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <div className="bg-slate-50 min-h-dvh">
+      <Header />
+      <h1 className="text-4xl text-center py-6">Tu Biblioteca Personal</h1>
+      <Tabs />
+      <Routes>
+        <Route
+          path="books"
+          element={<Books data={books} genres={genres} authors={authors} />}
+        />
+        <Route path="authors" element={<Authors data={authors} />} />
+        <Route path="genres" element={<Genres data={genres} />} />
+      </Routes>
+    </div>
+  );
 }
 
-export default App
+export default App;
